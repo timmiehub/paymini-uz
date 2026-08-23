@@ -157,5 +157,6 @@ export const localDb = {
 }
 
 export function isLocalMode() {
-  return process.env.LOCAL_STORE === '1' || !process.env.SUPABASE_URL
+  if (process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY) return false
+  return process.env.LOCAL_STORE !== '0'
 }

@@ -205,7 +205,13 @@ const server = http.createServer(async (req, res) => {
 
   try {
     if (url.pathname === '/health') {
-      send(res, 200, { ok: true, local, demo: isPaymeDemo(), bot: !!bot })
+      send(res, 200, {
+        ok: true,
+        db: local ? 'memory' : 'supabase',
+        local,
+        demo: isPaymeDemo(),
+        bot: !!bot,
+      })
       return
     }
 

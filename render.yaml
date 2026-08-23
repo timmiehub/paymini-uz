@@ -9,9 +9,15 @@ services:
     envVars:
       - key: NODE_VERSION
         value: "20"
-      - key: LOCAL_STORE
-        value: "1"
       - key: PAYME_DEMO
         value: "1"
       - key: BOT_TOKEN
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: VITE_SUPABASE_URL
+        sync: false
+      - key: VITE_SUPABASE_ANON_KEY
         sync: false
