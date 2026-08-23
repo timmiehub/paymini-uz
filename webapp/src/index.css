@@ -1,0 +1,30 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #0f1419;
+  --card: #1a2332;
+  --accent: #2dd4a8;
+  --accent-dim: #1a9e7a;
+  --text: #f0f4f8;
+  --muted: #8b9cb3;
+  --warn: #f5a524;
+}
+
+* { box-sizing: border-box; }
+
+html, body, #root {
+  min-height: 100%;
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Segoe UI", system-ui, sans-serif;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+}
+
+input, select, textarea {
+  font: inherit;
+}

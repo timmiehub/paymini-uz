@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: paymini-bot
+    runtime: node
+    rootDir: bot
+    buildCommand: npm install
+    startCommand: node index.js
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: LOCAL_STORE
+        value: "1"
+      - key: PAYME_DEMO
+        value: "1"
+      - key: BOT_TOKEN
+        sync: false
+      - key: WEBAPP_URL
+        sync: false
