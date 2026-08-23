@@ -9,7 +9,10 @@ if (!url || !key) {
 }
 
 export const db = url && key
-  ? createClient(url, key, { auth: { persistSession: false } })
+  ? createClient(url, key, {
+      auth: { persistSession: false, autoRefreshToken: false },
+      realtime: { enabled: false },
+    })
   : null
 
 export function requireDb() {
