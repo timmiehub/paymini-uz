@@ -90,6 +90,7 @@ alter table availability_rules enable row level security;
 
 create policy "public read businesses" on businesses for select using (true);
 create policy "public read offers" on offers for select using (true);
+create policy "public read profiles" on profiles for select using (true);
 create policy "public insert profiles" on profiles for insert with check (true);
 create policy "public update profiles" on profiles for update using (true);
 create policy "public insert businesses" on businesses for insert with check (true);
