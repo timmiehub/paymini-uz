@@ -1,24 +1,19 @@
-# Деплой на Render (не localhost)
+# Деплой на Render (HTTPS, не localhost)
 
-## Один раз
+## 2 минуты
 
-1. Открой: https://dashboard.render.com/blueprint/new  
-2. Подключи репо **timmiehub/paymini-uz**  
-3. В переменных у сервиса **paymini-bot** вставь **BOT_TOKEN** (от BotFather)  
-4. Нажми **Apply** — Render поднимет API и webapp с HTTPS  
+1. Открой: **https://render.com/deploy?repo=https://github.com/timmiehub/paymini-uz**
+2. Войди в Render (Google/GitHub).
+3. В поле **BOT_TOKEN** вставь токен от @BotFather.
+4. Нажми **Apply** — подождите 3–5 минут.
 
-После деплоя:
+Render даст URL вида `https://paymini-xxxx.onrender.com` — это и приложение, и API.
 
-5. Скопируй URL webapp (например `https://paymini-web.onrender.com`)  
-6. В терминале:
-   ```powershell
-   cd C:\Users\user\paymini-uz\bot
-   $env:BOT_TOKEN="твой_токен"
-   node setupTelegram.js https://paymini-web.onrender.com
-   ```
+Бот сам поставит кнопку «Открыть PayMini» в Telegram.
 
 ## Проверка
 
-@paymini_uz_bot → /start → «Открыть PayMini» → бизнес → QR → оплата (демо).
+1. @paymini_uz_bot → /start
+2. «Открыть PayMini» → создай бизнес → демо → QR → оплата
 
-Payme callback: `https://paymini-bot.onrender.com/payme`
+Payme callback (позже): `https://ВАШ-URL.onrender.com/payme`

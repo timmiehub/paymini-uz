@@ -1,11 +1,10 @@
 services:
   - type: web
-    name: paymini-bot
+    name: paymini
     runtime: node
-    rootDir: bot
     plan: free
-    buildCommand: npm install
-    startCommand: node index.js
+    buildCommand: cd webapp && npm ci && npm run build && cd ../bot && npm ci
+    startCommand: node bot/index.js
     healthCheckPath: /health
     envVars:
       - key: NODE_VERSION
@@ -16,24 +15,3 @@ services:
         value: "1"
       - key: BOT_TOKEN
         sync: false
-      - key: WEBAPP_URL
-        fromService:
-          name: paymini-web
-          type: web
-          envVarKey: RENDER_EXTERNAL_URL
-
-  - type: web
-    name: paymini-web
-    runtime: static
-    buildCommand: cd webapp && npm ci && npm run build
-    staticPublishPath: webapp/dist
-    envVars:
-      - key: VITE_API_URL
-        fromService:
-          name: paymini-bot
-          type: web
-          property: host
-      - key: VITE_BOT_USERNAME
-        value: paymini_uz_bot
-      - key: VITE_BASE
-        value: /

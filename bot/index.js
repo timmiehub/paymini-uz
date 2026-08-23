@@ -5,10 +5,11 @@ import { createPaymeMerchantHandler } from './paymeMerchant.js'
 import { buildPaymeCheckoutUrl, isPaymeDemo } from './paymeCheckout.js'
 import { isLocalMode, localDb } from './localStore.js'
 import { db } from './db.js'
+import { serveStatic } from './static.js'
 
 const token = process.env.BOT_TOKEN
 const port = Number(process.env.PORT || 8787)
-const webappUrl = process.env.WEBAPP_URL || 'http://localhost:5173'
+const webappUrl = (process.env.WEBAPP_URL || process.env.RENDER_EXTERNAL_URL || 'http://localhost:5173').replace(/\/$/, '')
 const local = isLocalMode()
 
 let bot = null
@@ -268,6 +269,8 @@ const server = http.createServer(async (req, res) => {
       return
     }
 
+    if (req.method === 'GET' && serveStatic(req, res, url)) return
+
     send(res, 404, { error: 'not_found' })
   } catch (e) {
     console.error(e)
@@ -298,7 +301,28 @@ if (bot) {
     })
   })
 
-  bot.launch().then(() => console.log('[bot] Telegram started')).catch((e) => {
+  bot.launch().then(async () => {
+    console.log('[bot] Telegram started')
+    if (process.env.RENDER_EXTERNAL_URL) {
+      try {
+        const r = await fetch(`https://api.telegram.org/bot${token}/setChatMenuButton`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            menu_button: {
+              type: 'web_app',
+              text: 'Открыть PayMini',
+              web_app: { url: webappUrl },
+            },
+          }),
+        })
+        const j = await r.json()
+        if (j.ok) console.log('[bot] Menu button →', webappUrl)
+      } catch (e) {
+        console.warn('[bot] menu button setup failed', e.message)
+      }
+    }
+  }).catch((e) => {
     console.error('[bot] launch failed', e.message)
   })
   process.once('SIGINT', () => bot.stop('SIGINT'))
