@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { getTelegramUser } from './lib/utils.js'
 import { getBusinessByOwner, getBusinessBySlug } from './lib/api.js'
+import { Landing } from './screens/Landing.jsx'
 import { Onboard } from './screens/Onboard.jsx'
 import { PaymeSetup } from './screens/PaymeSetup.jsx'
 import { OwnerHome } from './screens/OwnerHome.jsx'
@@ -9,15 +10,22 @@ import { ClientPay } from './screens/ClientPay.jsx'
 import { Orders } from './screens/Orders.jsx'
 import { Btn, Screen } from './components/ui.jsx'
 
-function parseQuery() {
+function parseRoute() {
   const q = new URLSearchParams(window.location.search)
-  return { b: q.get('b'), order: q.get('order') }
+  const path = window.location.pathname.replace(/\/$/, '') || '/'
+  return {
+    path,
+    b: q.get('b'),
+    order: q.get('order'),
+    isApp: path === '/app',
+    isLanding: path === '/' && !q.get('b') && !q.get('order'),
+  }
 }
 
 export default function App() {
+  const route = useMemo(() => parseRoute(), [])
   const user = useMemo(() => getTelegramUser(), [])
-  const q = useMemo(() => parseQuery(), [])
-  const [mode, setMode] = useState(q.b ? 'client' : 'boot')
+  const [mode, setMode] = useState('boot')
   const [business, setBusiness] = useState(null)
   const [screen, setScreen] = useState('home')
   const [err, setErr] = useState('')
@@ -26,14 +34,22 @@ export default function App() {
     let cancelled = false
     async function boot() {
       try {
-        if (q.b) {
-          const biz = await getBusinessBySlug(q.b)
+        if (route.b) {
+          const biz = await getBusinessBySlug(route.b)
           if (!biz) throw new Error('Бизнес не найден')
           if (!cancelled) {
             setBusiness(biz)
             setMode('client')
-            setScreen(q.order ? 'pay' : 'wait')
+            setScreen(route.order ? 'pay' : 'wait')
           }
+          return
+        }
+        if (route.isLanding) {
+          if (!cancelled) setMode('landing')
+          return
+        }
+        if (!route.isApp) {
+          if (!cancelled) setMode('landing')
           return
         }
         const biz = await getBusinessByOwner(user.id)
@@ -48,7 +64,7 @@ export default function App() {
     }
     boot()
     return () => { cancelled = true }
-  }, [user.id, q.b, q.order])
+  }, [user.id, route.b, route.order, route.isApp, route.isLanding])
 
   if (err) {
     return (
@@ -58,13 +74,15 @@ export default function App() {
     )
   }
 
-  if (mode === 'boot' || (mode === 'client' && !business)) {
+  if (mode === 'boot') {
     return (
       <Screen title="PayMini">
         <p className="text-[var(--muted)]">Загрузка…</p>
       </Screen>
     )
   }
+
+  if (mode === 'landing') return <Landing />
 
   if (mode === 'owner') {
     if (screen === 'onboard') {
@@ -95,11 +113,11 @@ export default function App() {
     )
   }
 
-  if (screen === 'pay' && q.order) {
+  if (screen === 'pay' && route.order) {
     return (
       <ClientPay
         business={business}
-        orderId={q.order}
+        orderId={route.order}
         onHome={() => {
           window.location.href = `/?b=${encodeURIComponent(business.slug)}`
         }}
@@ -110,10 +128,10 @@ export default function App() {
   return (
     <Screen title={business.name}>
       <p className="text-sm text-[var(--muted)]">
-        Попросите продавца показать QR с суммой на своём телефоне — отсканируйте и оплатите.
+        Попросите продавца показать QR — отсканируйте и оплатите. Работает без Telegram.
       </p>
-      <Btn variant="ghost" onClick={() => window.Telegram?.WebApp?.close?.()}>
-        Закрыть
+      <Btn variant="ghost" onClick={() => { window.location.href = '/' }}>
+        На главную
       </Btn>
     </Screen>
   )

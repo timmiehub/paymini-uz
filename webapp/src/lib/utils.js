@@ -7,11 +7,20 @@ export function getTelegramUser() {
     return {
       id: u.id,
       name: [u.first_name, u.last_name].filter(Boolean).join(' ') || u.username || `tg_${u.id}`,
+      source: 'telegram',
     }
   }
-  const demoId = Number(localStorage.getItem('paymini_demo_tg') || 900001)
-  localStorage.setItem('paymini_demo_tg', String(demoId))
-  return { id: demoId, name: 'Demo Owner' }
+  let webId = localStorage.getItem('paymini_web_owner_id')
+  if (!webId) {
+    webId = String(8000000000 + Math.floor(Math.random() * 999999999))
+    localStorage.setItem('paymini_web_owner_id', webId)
+  }
+  const name = localStorage.getItem('paymini_web_owner_name') || 'Владелец'
+  return { id: Number(webId), name, source: 'web' }
+}
+
+export function setWebOwnerName(name) {
+  localStorage.setItem('paymini_web_owner_name', name)
 }
 
 export function formatUzs(n) {
