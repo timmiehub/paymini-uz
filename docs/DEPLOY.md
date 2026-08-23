@@ -1,37 +1,24 @@
-# Деплой (не localhost)
+# Деплой на Render (не localhost)
 
-## 1. GitHub Pages — приложение
+## Один раз
 
-Репо: `timmiehub/paymini-uz`  
-URL: **https://timmiehub.github.io/paymini-uz/**
+1. Открой: https://dashboard.render.com/blueprint/new  
+2. Подключи репо **timmiehub/paymini-uz**  
+3. В переменных у сервиса **paymini-bot** вставь **BOT_TOKEN** (от BotFather)  
+4. Нажми **Apply** — Render поднимет API и webapp с HTTPS  
 
-После push в `main`/`master` GitHub Actions сам соберёт webapp.
+После деплоя:
 
-## 2. Render — бот + API
+5. Скопируй URL webapp (например `https://paymini-web.onrender.com`)  
+6. В терминале:
+   ```powershell
+   cd C:\Users\user\paymini-uz\bot
+   $env:BOT_TOKEN="твой_токен"
+   node setupTelegram.js https://paymini-web.onrender.com
+   ```
 
-1. Зайди на https://dashboard.render.com → **New → Blueprint** → подключи репо `paymini-uz`.
-2. В переменных сервиса `paymini-bot`:
-   - `BOT_TOKEN` — токен от BotFather
-   - `WEBAPP_URL` — `https://timmiehub.github.io/paymini-uz`
-3. Deploy. Скопируй URL вида `https://paymini-bot-xxxx.onrender.com`
+## Проверка
 
-## 3. Связать webapp и API
+@paymini_uz_bot → /start → «Открыть PayMini» → бизнес → QR → оплата (демо).
 
-GitHub → репо → **Settings → Secrets and variables → Actions → Variables**  
-Добавь: `VITE_API_URL` = URL Render (шаг 2).  
-Перезапусти workflow **Deploy webapp**.
-
-## 4. Кнопка в Telegram
-
-```powershell
-cd bot
-$env:WEBAPP_URL="https://timmiehub.github.io/paymini-uz"
-node setupTelegram.js $env:WEBAPP_URL
-```
-
-## 5. Проверка
-
-1. @paymini_uz_bot → /start → «Открыть PayMini»
-2. Создай бизнес → демо → QR → оплата
-
-Payme callback для прод: `https://ВАШ-RENDER-URL/payme`
+Payme callback: `https://paymini-bot.onrender.com/payme`

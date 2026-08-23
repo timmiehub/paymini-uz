@@ -1,4 +1,5 @@
-const API_BASE = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '')
+let API_BASE = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '')
+if (API_BASE && !/^https?:\/\//i.test(API_BASE)) API_BASE = `https://${API_BASE}`
 const useLocal = !import.meta.env.VITE_SUPABASE_URL
 
 async function api(path, { method = 'GET', body } = {}) {
